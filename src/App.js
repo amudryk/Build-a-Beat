@@ -18,10 +18,13 @@ import SwingSlider from "./components/SwingSlider.js";
 import RecordStart from "./components/RecordStart.js"
 import KickTuningKnob from "./components/KickTuningKnob.js";
 import SnareDelayKnob from "./components/SnareDelayKnob.js";
-import CymbalReleaseKnob from "./components/CymbalReleaseKnob.js";
-
+import HihatDecayKnob from "./components/HihatDecayKnob.js"
 
 class App extends Component {
+
+  getBpm = 120;
+  getPitch = 44;
+  getBeatDensity = 0.7;
 
   state = {
     steps: [
@@ -29,13 +32,13 @@ class App extends Component {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ],
-    bpm: 120,
+    bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
     activeColumn: 0,
     time: 0,
     masterVolume: 0,
-    kickDrumTuning: 43.65,
+    kickDrumTuning: this.getPitch,
     closedHihatDecayLevel: 0,
     mediaRecorderState: false
   };
@@ -122,6 +125,10 @@ class App extends Component {
   // delay for snare
   changePingPongDelayLevel = (value) => {
     this.pingPong.wet.value = value;
+  }
+
+  changeCymbalDecayLevel = (value) => {
+    this.closedHihat.envelope.decay = value
   }
 
   changeVolume = value => {
@@ -225,7 +232,7 @@ class App extends Component {
 
   randomPattern = () => {
     let makeARandomNumber = () => {
-      return Math.random() > 0.8 ? 1 : 0;  // if number returned is greater 0.8 than make it 1 otherwise its 0
+      return Math.random() > this.getBeatDensity ? 1 : 0;  // if number returned is greater 0.8 than make it 1 otherwise its 0
     }
 
     let randoms = Array(16).fill(0).map(makeARandomNumber);
@@ -321,7 +328,7 @@ class App extends Component {
 
             <div id="knobImages" className="one wide column">
               <KickTuningKnob changeKickDrumTuning={this.changeKickDrumTuning} />
-              <CymbalReleaseKnob changeCymbalReleaseLevel={this.changeCymbalReleaseLevel} />
+              <HihatDecayKnob changeCymbalDecayLevel={this.changeCymbalDecayLevel} />
               <SnareDelayKnob changePingPongDelayLevel={this.changePingPongDelayLevel} />
             </div>
           </div>
