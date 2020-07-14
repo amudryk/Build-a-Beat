@@ -2,23 +2,26 @@ import React, { Component } from "react";
 
 class PlayPause extends Component {
   state = {
-    playing: false
+    playing: false,
   };
 
   handleClick = () => {
+    if (this.props.selection) {
+      this.props.setBeat(this.props.beat);
+    }
+
     if (this.state.playing) {
       this.props.pause();
     } else {
       this.props.play();
     }
     this.setState({
-      playing: !this.state.playing
+      playing: !this.state.playing,
     });
   };
 
   render() {
-
-    const playButtonClass = this.state.playing ? 'pause icon' : 'play icon'
+    const playButtonClass = this.state.playing ? "pause icon" : "play icon";
 
     return (
       <div className="huge ui vertical labeled icon buttons">
@@ -29,7 +32,7 @@ class PlayPause extends Component {
             border: "2px solid black",
             background: "#F7F5E1",
             borderRadius: "13px",
-            marginBottom: "1rem"
+            marginBottom: "1rem",
           }}
         >
           <i className={playButtonClass} />

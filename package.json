@@ -11,6 +11,7 @@
     "react-dom": "^16.13.1",
     "react-rotary-knob": "^1.1.8",
     "react-rotary-knob-skin-pack": "^1.0.2",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "semantic-ui-css": "^2.4.1",
     "tone": "^13.4.9"
