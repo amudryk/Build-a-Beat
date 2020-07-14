@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "../App.css";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as Tone from "tone";
+import Slider from "./slider";
 
 import PlayPause from "./PlayPause.js";
 

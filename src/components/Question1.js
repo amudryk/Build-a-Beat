@@ -83,7 +83,7 @@ class Question1 extends Component {
           <button className="next">
             <Link
               to={{
-                pathname: "/selection",
+                pathname: "/question2",
               }}
             >
               <h1 style={{color: "#FFFFFF"}}>Next</h1>
