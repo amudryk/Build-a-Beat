@@ -1,0 +1,58 @@
+.start {
+  background-image: url("../images/start.png");
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  align-content: center;
+}
+
+.title {
+  position: absolute;
+  width: 735px;
+  height: 120px;
+  left: 353px;
+  top: 180px;
+
+  font-family: Gothic A1;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 96px;
+  line-height: 120px;
+  /* identical to box height */
+
+
+  color: #FFFFFF;
+}
+
+.begin {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 42px;
+
+  position: absolute;
+  width: 300px;
+  height: 100px;
+  left: 570px;
+  top: 400px;
+
+  background: #F2B415;
+  border: 3px solid #D0A41C;
+  box-sizing: border-box;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.begin h1{
+  flex: none;
+  order: 0;
+  margin: 10px 0px;
+  /*font-family: Anonymous Pro;*/
+  font-style: italic;
+  font-weight: bold;
+  font-size: 36px;
+
+/* identical to box height */
+
+  color: #FFFFFF;
+}
