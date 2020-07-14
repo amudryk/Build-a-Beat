@@ -11,7 +11,7 @@ class Begin extends Component {
         <button class="begin">
           <Link
             to={{
-              pathname: "/selection",
+              pathname: "/question1",
             }}
           >
             <h1>LET’S BEGIN!</h1>

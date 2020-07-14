@@ -1,0 +1,106 @@
+.angry {
+  position: absolute;
+  width: 329px;
+  height: 200px;
+  top: 128px;
+  left: 349px;
+
+  background: #FFD3C6;
+  border: 2px solid #000000;
+  box-sizing: border-box;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.angry.select{
+  border: 10px solid #000000
+}
+
+.sad {
+  position: absolute;
+  width: 329px;
+  height: 200px;
+  left: 349px;
+  top: 349px;
+
+  background: #D1E5F8;
+  border: 2px solid #000000;
+  box-sizing: border-box;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sad.select{
+  border: 10px solid #000000
+}
+
+.excited {
+  position: absolute;
+  width: 329px;
+  height: 200px;
+  left: 738px;
+  top: 128px;
+
+  background: #FFDE89;
+  border: 2px solid #000000;
+  box-sizing: border-box;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.excited.select{
+  border: 10px solid #000000
+}
+
+.calm {
+
+  position: absolute;
+  width: 329px;
+  height: 200px;
+  left: 738px;
+  top: 349px;
+  
+  background: #A3C9EC;
+  border: 2px solid #000000;
+  box-sizing: border-box;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.calm.select{
+  border: 10px solid #000000
+}
+
+h2 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 48px;
+  line-height: 60px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  
+  color: #000000;
+}
+
+.next {
+  display: flex;
+  flex-direction: column;
+
+  position: absolute;
+  width: 150px;
+  height: 50px;
+  right: 100px;
+  bottom: 100px;
+
+  background: #2968C7;
+  border: 3px solid #1952A8;
+  box-sizing: border-box;
+  border-radius: 8px;
+
+  font-size: 24px;
+  text-align: center;
+  padding: 4px 42px;
+  cursor: pointer;
+}
