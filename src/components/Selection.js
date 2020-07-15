@@ -9,6 +9,7 @@ class Selection extends Component {
   constructor() {
     super();
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.PlayPause = PlayPause;
   }
   getBpm = 120;
   getPitch = 44;
@@ -139,10 +140,6 @@ class Selection extends Component {
     this.selectedBeat = beat;
   };
 
-  confirmSelection = () => {
-    this.pause();
-  };
-
   changeBpm = (value) => {
     Tone.Transport.bpm.value = value;
 
@@ -215,16 +212,16 @@ class Selection extends Component {
       <React.Fragment>
         <h2>Select your preferred rhythm</h2>
         <form onSubmit={this.handleSubmit}>
-          <label htmlFor="pitch">Pitch (1-99)</label>
+          <label htmlFor="pitch">Pitch (10-100)</label>
           <input id="pitch" name="pitch" type="number" />
 
-          <label htmlFor="bpm">Tempo (1-199)</label>
+          <label htmlFor="bpm">Tempo (44-200)</label>
           <input id="bpm" name="bpm" type="number" />
 
           <label htmlFor="beatDensity">Beat Density (1-100)</label>
           <input id="beatDensity" name="beatDensity" type="number" />
 
-          <button>Confirm Parameters</button>
+          <button onClick={this.pause}>Confirm Parameters</button>
         </form>
         <PlayPause
           play={this.play}
@@ -253,7 +250,7 @@ class Selection extends Component {
           selection={true}
           style={{ marginBottom: "1rem" }}
         />
-        <button onClick={this.confirmSelection}>
+        <button onClick={this.pause}>
           <Link
             to={{
               pathname: "/editor",

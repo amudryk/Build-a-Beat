@@ -4,18 +4,17 @@ import * as skins from "react-rotary-knob-skin-pack";
 
 class KickTuningKnob extends React.Component {
   state = {
-    value: 44
+    value: 44,
   };
 
-  handleChange = value => {
-
+  handleChange = (value) => {
     const maxDistance = 40;
     let distance = Math.abs(value - this.state.value);
     if (distance > maxDistance) {
       return;
     } else {
       this.setState({
-        value: value
+        value: value,
       });
     }
 
@@ -26,12 +25,11 @@ class KickTuningKnob extends React.Component {
     return (
       <React.Fragment>
         <Knob
-          className="whindUp"
           style={{
-            width: "auto",
+            width: "50%",
             height: "auto",
           }}
-          onChange={value => {
+          onChange={(value) => {
             this.handleChange(value);
           }}
           min={44}
@@ -39,12 +37,12 @@ class KickTuningKnob extends React.Component {
           value={this.state.value}
           unlockDistance={0}
           preciseMode={false}
-          skin={skins.s7}
+          skin={skins.s8}
           {...this.props.rest}
         />{" "}
-        <h5 style={{marginTop: "0rem",
-        textAlign: "center",
-        width: "87%"}}>Tuning</h5>
+        <h5 style={{ marginTop: "0rem", marginLeft: "0.1rem", width: "50%" }}>
+          Pitch
+        </h5>
       </React.Fragment>
     );
   }

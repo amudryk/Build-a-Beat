@@ -4,10 +4,10 @@ import * as skins from "react-rotary-knob-skin-pack";
 
 class BpmSlider extends React.Component {
   state = {
-    value: 120
+    value: 120,
   };
 
-  handleChange = value => {
+  handleChange = (value) => {
     const maxDistance = 100;
     let distance = Math.abs(value - this.state.value);
 
@@ -15,13 +15,12 @@ class BpmSlider extends React.Component {
       return;
     } else {
       this.setState({
-        value: value
+        value: value,
       });
     }
 
     this.props.changeBpm(value);
   };
-
 
   render() {
     return (
@@ -31,7 +30,7 @@ class BpmSlider extends React.Component {
             width: "50%",
             height: "auto",
           }}
-          onChange={value => {
+          onChange={(value) => {
             this.handleChange(value);
           }}
           min={10}
@@ -43,7 +42,9 @@ class BpmSlider extends React.Component {
           skin={skins.s8}
           {...this.props.rest}
         />
-      <h5 style={{marginTop: "0rem", marginLeft: "0.1rem", width: "50%"}}>Tempo (BPM)</h5>
+        <h5 style={{ marginTop: "0rem", marginLeft: "0.1rem", width: "50%" }}>
+          Tempo
+        </h5>
       </React.Fragment>
     );
   }

@@ -24,10 +24,10 @@ class Cell extends Component {
   renderBorderMovement = () =>
     this.props.activeColumn === this.props.y
       ? this.props.y % 4 === 0
-        ? "5px solid #00F9FF"
+        ? "4px solid #00F9FF"
         : "2px solid #00F9FF"
       : this.props.y % 4 === 0
-      ? "5px solid black"
+      ? "4px solid black"
       : "2px solid black";
 
   render() {

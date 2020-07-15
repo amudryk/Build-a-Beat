@@ -237,34 +237,6 @@ class Editor extends Component {
     });
   };
 
-  record = () => {
-    // if (this.state.mediaRecorderState === false) {
-    //   this.output.connect(this.dest);
-    //   this.recorder.start()
-
-    //   this.recorder.ondataavailable = evt => this.chunks.push(evt.data);
-
-    //   this.setState({
-    //     mediaRecorderState: true
-    //   })
-    // } else {
-    //   this.recorder.stop()
-
-    //   this.recorder.onstop = evt => {
-    //     let blob = new Blob(this.chunks, { type: 'audio/wav; codecs=opus' });
-    // // this.audio.src = URL.createObjectURL(blob);
-    //     download(blob, "rhythmcomposer.wav", 'audio/wav')
-    //   };
-
-    //   this.setState({
-    //     mediaRecorderState: false
-    //   })
-
-    //   this.chunks = [];
-    // }
-    console.log("NOT IMPLEMENTED");
-  };
-
   render() {
     let cells = this.state.steps.map((row, xCoord) => {
       return (
@@ -306,9 +278,9 @@ class Editor extends Component {
             </div>
 
             <div id="knobImages" className="one wide column">
-              <KickTuningKnob
+              {/* <KickTuningKnob
                 changeKickDrumTuning={this.changeKickDrumTuning}
-              />
+              /> */}
               <HihatDecayKnob
                 changeCymbalDecayLevel={this.changeCymbalDecayLevel}
               />
@@ -328,17 +300,23 @@ class Editor extends Component {
                 beat={this.state}
                 style={{ marginBottom: "1rem" }}
               />
-              <RecordStart className="record-button" record={this.record} />
+              {/* <RecordStart className="record-button" record={this.record} /> */}
             </div>
-            <div className="three wide column">
+            {/* <div className="three wide column">
               <ClearPattern clearPattern={this.clearPattern} />
-            </div>
-            <div className="three wide column">
+            </div> */}
+            {/* <div className="three wide column">
               <RandomPattern randomPattern={this.randomPattern} />
-            </div>
+            </div> */}
             <div className="two wide column center">
               <BpmSlider changeBpm={this.changeBpm} />
             </div>
+            <div className="two wide column center">
+              <KickTuningKnob
+                changeKickDrumTuning={this.changeKickDrumTuning}
+              />
+            </div>
+
             <div className="two wide column center">
               <SwingSlider changeSwing={this.changeSwing} />
             </div>
