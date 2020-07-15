@@ -3,14 +3,14 @@ import React, { Component } from "react";
 class Cell extends Component {
   state = {
     active: false,
-    steps: this.props.steps
+    steps: this.props.steps,
   };
 
-  clickHandler = event => {
+  clickHandler = (event) => {
     this.props.stepToggle(this.props.x, this.props.y);
 
     this.setState({
-      steps: this.props.steps
+      steps: this.props.steps,
     });
   };
 
@@ -18,12 +18,16 @@ class Cell extends Component {
     this.props.steps[this.props.x][this.props.y] === 1
       ? "#FFE4D0"
       : this.props.y % 4 === 0
-      ? "#D0D3FF"
+      ? "#D0EBFF"
       : "#D0EBFF";
 
   renderBorderMovement = () =>
     this.props.activeColumn === this.props.y
-      ? "2px solid #00F9FF"
+      ? this.props.y % 4 === 0
+        ? "5px solid #00F9FF"
+        : "2px solid #00F9FF"
+      : this.props.y % 4 === 0
+      ? "5px solid black"
       : "2px solid black";
 
   render() {
@@ -31,7 +35,7 @@ class Cell extends Component {
       <div
         className="box"
         style={{
-          border: this.renderBorderMovement()
+          border: this.renderBorderMovement(),
         }}
       >
         <div
@@ -39,7 +43,7 @@ class Cell extends Component {
           id={this.props.id}
           onClick={this.clickHandler}
           style={{
-            background: this.renderDivColors()
+            background: this.renderDivColors(),
           }}
         />
       </div>
