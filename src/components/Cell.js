@@ -16,7 +16,7 @@ class Cell extends Component {
 
   renderDivColors = () =>
     this.props.steps[this.props.x][this.props.y] === 1
-      ? "#FFE4D0"
+      ? "#F2B415"
       : this.props.y % 4 === 0
       ? "#D0EBFF"
       : "#D0EBFF";
