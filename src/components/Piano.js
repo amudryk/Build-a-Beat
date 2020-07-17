@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-//import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import * as Tone from "tone"; 
 import PlayPause from "./PlayPause.js";
 
@@ -128,6 +128,16 @@ class Piano extends Component{
           selection={true}
           style={{ marginBottom: "1rem" }}
         />
+
+        <button onClick={this.pause}>
+          <Link
+            to={{
+              pathname: "/selection",
+            }}
+          >
+            Next
+          </Link>
+        </button>
       </div>
     );
   }
