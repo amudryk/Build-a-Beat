@@ -36,7 +36,7 @@ class Editor extends Component {
   pingPong = new Tone.PingPongDelay({
     delayTime: "8n",
     feedback: 0.32,
-    wet: 0, // wet level can be modified by user via the snaredelayknob
+    wet: this.state.wetLevel, // wet level can be modified by user via the snaredelayknob
   });
 
   // create compressor for kick
@@ -77,7 +77,7 @@ class Editor extends Component {
     frequency: 150,
     envelope: {
       attack: 0.002,
-      decay: 0.25,
+      decay: this.state.closedHihatDecayLevel,
       release: 0.025,
     },
     harmonicity: 4.1,
@@ -309,11 +309,12 @@ class Editor extends Component {
               <RandomPattern randomPattern={this.randomPattern} />
             </div> */}
             <div className="two wide column center">
-              <BpmSlider changeBpm={this.changeBpm} />
+              <BpmSlider changeBpm={this.changeBpm} bpm={this.state.bpm} />
             </div>
             <div className="two wide column center">
               <KickTuningKnob
                 changeKickDrumTuning={this.changeKickDrumTuning}
+                pitch={this.state.kickDrumTuning}
               />
             </div>
 

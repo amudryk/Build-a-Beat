@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as Tone from "tone";
 
 import PlayPause from "./PlayPause.js";
+import Regenerate from "./Regenerate.js";
 
 class Selection extends Component {
   constructor() {
@@ -12,15 +13,14 @@ class Selection extends Component {
     this.PlayPause = PlayPause;
   }
   getBpm = 120;
-  getPitch = 44;
+  getPitch;
   getBeatDensity = 0.7;
-  selectedBeat;
 
   state = {
     steps: [
-      [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
-      [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0],
+      [1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+      [1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1],
+      [0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0],
     ],
     bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
@@ -28,8 +28,9 @@ class Selection extends Component {
     activeColumn: 0,
     time: 0,
     masterVolume: 0,
-    kickDrumTuning: this.getPitch,
-    closedHihatDecayLevel: 0,
+    kickDrumTuning: 44,
+    closedHihatDecayLevel: 0.25,
+    wetLevel: 0.55,
     mediaRecorderState: false,
   };
 
@@ -45,8 +46,9 @@ class Selection extends Component {
     activeColumn: 0,
     time: 0,
     masterVolume: 0,
-    kickDrumTuning: this.getPitch,
-    closedHihatDecayLevel: 0,
+    kickDrumTuning: 90,
+    closedHihatDecayLevel: 0.5,
+    wetLevel: 0,
     mediaRecorderState: false,
   };
 
@@ -62,9 +64,28 @@ class Selection extends Component {
     activeColumn: 0,
     time: 0,
     masterVolume: 0,
-    kickDrumTuning: this.getPitch,
-    closedHihatDecayLevel: 0,
+    kickDrumTuning: 30,
+    closedHihatDecayLevel: 0.8,
+    wetLevel: 0.75,
     mediaRecorderState: false,
+  };
+
+  selectedBeat = this.state;
+
+  //average between state1,2,3
+  currentBeatParams = {
+    wetLevel:
+      (this.state.wetLevel + this.state2.wetLevel + this.state3.wetLevel) / 3,
+    closedHihatDecayLevel:
+      (this.state.closedHihatDecayLevel +
+        this.state2.closedHihatDecayLevel +
+        this.state3.closedHihatDecayLevel) /
+      3,
+    kickDrumTuning:
+      (this.state.kickDrumTuning +
+        this.state2.kickDrumTuning +
+        this.state3.kickDrumTuning) /
+      3,
   };
 
   /// INIT SYNTHS & FX ///
@@ -76,7 +97,7 @@ class Selection extends Component {
   pingPong = new Tone.PingPongDelay({
     delayTime: "8n",
     feedback: 0.32,
-    wet: 0, // wet level can be modified by user via the snaredelayknob
+    wet: this.selectedBeat.wetLevel, // wet level can be modified by user via the snaredelayknob
   });
 
   // create compressor for kick
@@ -117,7 +138,7 @@ class Selection extends Component {
     frequency: 150,
     envelope: {
       attack: 0.002,
-      decay: 0.25,
+      decay: this.selectedBeat.closedHihatDecayLevel,
       release: 0.025,
     },
     harmonicity: 4.1,
@@ -138,6 +159,7 @@ class Selection extends Component {
 
   setBeat = (beat) => {
     this.selectedBeat = beat;
+    this.pingPong.wet.value = beat.wetLevel;
   };
 
   changeBpm = (value) => {
@@ -146,12 +168,47 @@ class Selection extends Component {
     this.setState({
       bpm: value,
     });
+    this.state2.bpm = value;
+    this.state3.bpm = value;
   };
 
   changeKickDrumTuning = (value) => {
     this.setState({
       kickDrumTuning: value,
     });
+    this.state2.kickDrumTuning = value;
+    this.state3.kickDrumTuning = value;
+  };
+
+  updateBeats = (newBeatParams) => {
+    this.pause();
+    this.state.wetLevel = newBeatParams[0].wetLevel;
+    this.state.closedHihatDecayLevel = newBeatParams[0].closedHihatDecayLevel;
+    this.state.kickDrumTuning = newBeatParams[0].kickDrumTuning;
+
+    this.state2.wetLevel = newBeatParams[1].wetLevel;
+    this.state2.closedHihatDecayLevel = newBeatParams[1].closedHihatDecayLevel;
+    this.state2.kickDrumTuning = newBeatParams[1].kickDrumTuning;
+
+    this.state3.wetLevel = newBeatParams[2].wetLevel;
+    this.state3.closedHihatDecayLevel = newBeatParams[2].closedHihatDecayLevel;
+    this.state3.kickDrumTuning = newBeatParams[2].kickDrumTuning;
+
+    //update currentBeatParams
+    this.currentBeatParams = {
+      wetLevel:
+        (this.state.wetLevel + this.state2.wetLevel + this.state3.wetLevel) / 3,
+      closedHihatDecayLevel:
+        (this.state.closedHihatDecayLevel +
+          this.state2.closedHihatDecayLevel +
+          this.state3.closedHihatDecayLevel) /
+        3,
+      kickDrumTuning:
+        (this.state.kickDrumTuning +
+          this.state2.kickDrumTuning +
+          this.state3.kickDrumTuning) /
+        3,
+    };
   };
 
   handleSubmit = (event) => {
@@ -162,7 +219,7 @@ class Selection extends Component {
     this.getBpm = data.get("bpm");
     this.getPitch = data.get("pitch");
     this.changeBpm(this.getBpm);
-    this.changeKickDrumTuning(this.getPitch);
+    this.changeKickDrumTuning(this.selectedBeat.kickDrumTuning);
   };
 
   componentDidMount() {
@@ -249,6 +306,11 @@ class Selection extends Component {
           setBeat={this.setBeat}
           selection={true}
           style={{ marginBottom: "1rem" }}
+        />
+        <Regenerate
+          updateBeats={this.updateBeats}
+          currentBeat={this.currentBeatParams}
+          chosenBeat={this.selectedBeat}
         />
         <button onClick={this.pause}>
           <Link
