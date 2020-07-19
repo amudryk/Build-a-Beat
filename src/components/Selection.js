@@ -3,6 +3,8 @@ import "../App.css";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as Tone from "tone";
 
+import { generatePopulation,DNA } from "./genetic_a.js";
+
 import PlayPause from "./PlayPause.js";
 
 class Selection extends Component {
@@ -15,14 +17,49 @@ class Selection extends Component {
   getPitch = 44;
   getBeatDensity = 0.7;
   selectedBeat;
+  
+  //TODO: Decide on these values
+	mutationRate = 1;		// Mutation rate
+	totalPopulation = 100;	// Total population
+  generations = 10;		// Number of generations between updates
+  numBeats = 16;
+  instruments1 = [1,1,1];
+  beat_density1 = Array(this.instruments1.length).fill(25)
+  beats1 = Array(this.instruments1.length).fill(Array(this.numBeats).fill(0));
 
-  state = {
-    steps: [
-      [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
-      [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0],
-    ],
-    bpm: this.getBpm,
+	get_from_UI = 0;	// Placeholder
+
+  // Target defined by the user parameters
+  // TODO: Figure out how to get the things from UI
+  target = {
+    beats:this.beats1,
+    tempo:this.get_from_UI,			// [10,200]
+    beat_density:this.beat_density1,	// [0,100]
+    instruments:this.instruments1,
+    pitch:this.get_from_UI,			// [44,100]
+    attack:this.get_from_UI,			// [0,1]
+    delay:this.get_from_UI,			// [0,4]
+  }
+
+  // Empty 
+  empty = {
+    beats:this.beats1,
+    tempo:this.get_from_UI,	// [10,200]
+    beat_density:[],	// [0,100]
+    instruments:this.instruments1,
+    pitch:0,			// [44,100]
+    attack:0,			// [0,1]
+    delay:0,			// [0,4]
+    fitness:0
+  }
+	
+	population = generatePopulation(this.totalPopulation, this.numBeats, this.empty)
+	
+	rando = DNA(this.numBeats, this.empty)
+	
+	state = {
+    steps: this.rando.beats,
+    bpm: this.rando.tempo,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
     activeColumn: 0,
@@ -31,41 +68,26 @@ class Selection extends Component {
     kickDrumTuning: this.getPitch,
     closedHihatDecayLevel: 0,
     mediaRecorderState: false,
-  };
-
-  state2 = {
-    steps: [
-      [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-      [0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0],
-      [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-    ],
-    bpm: this.getBpm,
-    notes: ["A", "C#", "E", "F#"],
-    column: 0,
-    activeColumn: 0,
-    time: 0,
-    masterVolume: 0,
-    kickDrumTuning: this.getPitch,
-    closedHihatDecayLevel: 0,
-    mediaRecorderState: false,
-  };
-
-  state3 = {
-    steps: [
-      [0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1],
-      [0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0],
-      [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1],
-    ],
-    bpm: this.getBpm,
-    notes: ["A", "C#", "E", "F#"],
-    column: 0,
-    activeColumn: 0,
-    time: 0,
-    masterVolume: 0,
-    kickDrumTuning: this.getPitch,
-    closedHihatDecayLevel: 0,
-    mediaRecorderState: false,
-  };
+  }
+	
+	
+	// Start state at random then evolve every time regenerate is clicked
+  // state = {
+  //   steps: [
+  //     [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+  //     [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
+  //     [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0],
+  //   ],
+  //   bpm: this.getBpm,
+  //   notes: ["A", "C#", "E", "F#"],
+  //   column: 0,
+  //   activeColumn: 0,
+  //   time: 0,
+  //   masterVolume: 0,
+  //   kickDrumTuning: this.getPitch,
+  //   closedHihatDecayLevel: 0,
+  //   mediaRecorderState: false,
+  // };
 
   /// INIT SYNTHS & FX ///
 
@@ -211,6 +233,9 @@ class Selection extends Component {
     return (
       <React.Fragment>
         <h2>Select your preferred rhythm</h2>
+        <div>{this.rando.beats[0]}</div>
+        <div>{this.rando.beats[1]}</div>
+        <div>{this.rando.beats[2]}</div>
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="pitch">Pitch (10-100)</label>
           <input id="pitch" name="pitch" type="number" />
@@ -232,24 +257,18 @@ class Selection extends Component {
           selection={true}
           style={{ marginBottom: "1rem" }}
         />
-        <PlayPause
-          play={this.play}
-          pause={this.pause}
-          playState={this.playState}
-          beat={this.state2}
-          setBeat={this.setBeat}
-          selection={true}
-          style={{ marginBottom: "1rem" }}
-        />
-        <PlayPause
-          play={this.play}
-          pause={this.pause}
-          playState={this.playState}
-          beat={this.state3}
-          setBeat={this.setBeat}
-          selection={true}
-          style={{ marginBottom: "1rem" }}
-        />
+		<button onClick={this.pause}>
+          <Link
+            to={{
+              pathname: "/editor",
+              aboutProps: {
+                state: this.selectedBeat,
+              },
+            }}
+          >
+            Regenerate
+          </Link>
+        </button>
         <button onClick={this.pause}>
           <Link
             to={{
