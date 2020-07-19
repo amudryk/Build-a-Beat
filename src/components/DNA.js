@@ -67,25 +67,26 @@ class DNA {
 		return Math.floor(Math.random() * (max - min) ) + min;
 	}
 	
-	// Fitness function for the initial creation
+	// Fitness function for the initial creation - low score is more fit
+	// Fitness only calculates difference in values, not scaled. To scale, maybe divide by max
 	calcFitnessInitial(target) {
-		var score = 0;
-		score = score + Math.abs(genes.tempo-target.tempo)
+		fitness = 0;
+		fitness = fitness + Math.abs(genes.tempo-target.tempo)
 		for (var i = 0; i < instruments.length; i++) {
-			score = score + Math.abs(genes.beat_density[i] - target.beat_density[i])
+			fitness = fitness + Math.abs(genes.beat_density[i] - target.beat_density[i])
 		}
 	}
 	
 	// Fitness function for a song in full
 	calcFitnessFull(target) {
-		var score = 0;
-		score = score + Math.abs(genes.tempo-target.tempo)
+		fitness = 0;
+		fitness = fitness + Math.abs(genes.tempo-target.tempo)
 		for (var i = 0; i < instruments.length; i++) {
-			score = score + Math.abs(genes.beat_density[i] - target.beat_density[i])
+			fitness = fitness + Math.abs(genes.beat_density[i] - target.beat_density[i])
 		}
-		score = score + Math.abs(genes.pitch-target.pitch)
-		score = score + Math.abs(genes.attack-target.attack)
-		score = score + Math.abs(genes.delay-target.delay)
+		fitness = fitness + Math.abs(genes.pitch-target.pitch)
+		fitness = fitness + Math.abs(genes.attack-target.attack)
+		fitness = fitness + Math.abs(genes.delay-target.delay)
 	}
 	
 	
