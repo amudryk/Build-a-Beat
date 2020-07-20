@@ -3,7 +3,7 @@ import "../App.css";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as Tone from "tone";
 
-import { generatePopulation,DNA } from "./genetic_a.js";
+import { generatePopulation,DNA,updateGA } from "./genetic_a.js";
 
 import PlayPause from "./PlayPause.js";
 
@@ -18,48 +18,26 @@ class Selection extends Component {
   getBeatDensity = 0.7;
   selectedBeat;
   
-  //TODO: Decide on these values
+  //TODO: Decide on these values or get them from the Quiz
 	mutationRate = 1;		// Mutation rate
 	totalPopulation = 100;	// Total population
   generations = 10;		// Number of generations between updates
-  numBeats = 16;
-  instruments1 = [1,1,1];
-  beat_density1 = Array(this.instruments1.length).fill(25)
-  beats1 = Array(this.instruments1.length).fill(Array(this.numBeats).fill(0));
+  numBeats = 16;  // Number of beats in the song
+  instruments1 = [1,1,1]; // This should be from the Quiz
+  beatDensity1 = Array(this.instruments1.length).fill(14)  // This should be from the Quiz
+  steps1 = Array(this.instruments1.length).fill(Array(this.numBeats).fill(0));  // Empty array of beats
+  population1 = generatePopulation(this.totalPopulation, this.numBeats, this.instruments1, this.steps1)
 
-	get_from_UI = 0;	// Placeholder
-
-  // Target defined by the user parameters
-  // TODO: Figure out how to get the things from UI
-  target = {
-    beats:this.beats1,
-    tempo:this.get_from_UI,			// [10,200]
-    beat_density:this.beat_density1,	// [0,100]
-    instruments:this.instruments1,
-    pitch:this.get_from_UI,			// [44,100]
-    attack:this.get_from_UI,			// [0,1]
-    delay:this.get_from_UI,			// [0,4]
-  }
-
-  // Empty 
-  empty = {
-    beats:this.beats1,
-    tempo:this.get_from_UI,	// [10,200]
-    beat_density:[],	// [0,100]
-    instruments:this.instruments1,
-    pitch:0,			// [44,100]
-    attack:0,			// [0,1]
-    delay:0,			// [0,4]
-    fitness:0
-  }
-	
-	population = generatePopulation(this.totalPopulation, this.numBeats, this.empty)
-	
-	rando = DNA(this.numBeats, this.empty)
+  get_from_UI = 0;	// Placeholder
+  
+  randoBeat = DNA(this.numBeats, this.instruments1, this.steps1)[0]; // Generate random DNA for initial beat
 	
 	state = {
-    steps: this.rando.beats,
-    bpm: this.rando.tempo,
+    population: this.population1, // Change every generation
+    targetBeatDensity:this.beat_density1,	// [0,100]
+    instruments: this.instruments1,
+    steps: this.randoBeat[0],
+    bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
     activeColumn: 0,
@@ -69,25 +47,6 @@ class Selection extends Component {
     closedHihatDecayLevel: 0,
     mediaRecorderState: false,
   }
-	
-	
-	// Start state at random then evolve every time regenerate is clicked
-  // state = {
-  //   steps: [
-  //     [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-  //     [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0],
-  //     [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0],
-  //   ],
-  //   bpm: this.getBpm,
-  //   notes: ["A", "C#", "E", "F#"],
-  //   column: 0,
-  //   activeColumn: 0,
-  //   time: 0,
-  //   masterVolume: 0,
-  //   kickDrumTuning: this.getPitch,
-  //   closedHihatDecayLevel: 0,
-  //   mediaRecorderState: false,
-  // };
 
   /// INIT SYNTHS & FX ///
 
@@ -147,6 +106,15 @@ class Selection extends Component {
     resonance: 2000,
     octaves: 1,
   }).chain(this.appVol, Tone.Master);
+
+  newBeat = () => {
+    var newVals = updateGA(this.state.population, this.state.targetBeatDensity, this.mutationRate, this.state.steps, this.numBeats);
+    var newB = newVals[0];
+    this.setState({
+      population: newVals[1],
+      steps: newB.beats,
+    });
+  }
 
   play = (beat) => {
     Tone.Transport.bpm.value = this.selectedBeat.bpm;
@@ -233,9 +201,10 @@ class Selection extends Component {
     return (
       <React.Fragment>
         <h2>Select your preferred rhythm</h2>
-        <div>{this.rando.beats[0]}</div>
-        <div>{this.rando.beats[1]}</div>
-        <div>{this.rando.beats[2]}</div>
+        <div>{this.randoBeat[0]}</div>
+        <div>{this.randoBeat[1]}</div>
+        <div>{this.randoBeat[2]}</div>
+        {/* <div>{this.state.population[1].tempo}</div> */}
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="pitch">Pitch (10-100)</label>
           <input id="pitch" name="pitch" type="number" />
@@ -247,6 +216,7 @@ class Selection extends Component {
           <input id="beatDensity" name="beatDensity" type="number" />
 
           <button onClick={this.pause}>Confirm Parameters</button>
+          
         </form>
         <PlayPause
           play={this.play}
@@ -257,18 +227,6 @@ class Selection extends Component {
           selection={true}
           style={{ marginBottom: "1rem" }}
         />
-		<button onClick={this.pause}>
-          <Link
-            to={{
-              pathname: "/editor",
-              aboutProps: {
-                state: this.selectedBeat,
-              },
-            }}
-          >
-            Regenerate
-          </Link>
-        </button>
         <button onClick={this.pause}>
           <Link
             to={{
@@ -281,6 +239,7 @@ class Selection extends Component {
             Next
           </Link>
         </button>
+        <button onClick={this.newBeat}>Regenerate</button>
       </React.Fragment>
     );
   }
