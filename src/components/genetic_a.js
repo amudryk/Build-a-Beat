@@ -11,6 +11,7 @@ export function generatePopulation(totalPopulation, numBeats, instruments, beats
 			}
 		}
 		population[i] = [beats,fitness]
+
 	}
 	return population;
 }

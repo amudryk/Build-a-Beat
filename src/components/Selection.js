@@ -149,6 +149,15 @@ class Selection extends Component {
     octaves: 1,
   }).chain(this.appVol, Tone.Master);
 
+  newBeat = () => {
+    var newVals = updateGA(this.state.population, this.state.targetBeatDensity, this.mutationRate, this.state.steps, this.numBeats);
+    var newB = newVals[0];
+    this.setState({
+      population: newVals[1],
+      steps: newB.beats,
+    });
+  }
+
   play = (beat) => {
     Tone.Transport.bpm.value = this.selectedBeat.bpm;
     Tone.Transport.toggle();
@@ -180,9 +189,9 @@ class Selection extends Component {
 
   updateBeats = (newBeatParams) => {
     this.pause();
-    this.state.wetLevel = newBeatParams[0].wetLevel;
-    this.state.closedHihatDecayLevel = newBeatParams[0].closedHihatDecayLevel;
-    this.state.kickDrumTuning = newBeatParams[0].kickDrumTuning;
+    this.state1.wetLevel = newBeatParams[0].wetLevel;
+    this.state1.closedHihatDecayLevel = newBeatParams[0].closedHihatDecayLevel;
+    this.state1.kickDrumTuning = newBeatParams[0].kickDrumTuning;
 
     this.state2.wetLevel = newBeatParams[1].wetLevel;
     this.state2.closedHihatDecayLevel = newBeatParams[1].closedHihatDecayLevel;
@@ -195,14 +204,14 @@ class Selection extends Component {
     //update currentBeatParams
     this.currentBeatParams = {
       wetLevel:
-        (this.state.wetLevel + this.state2.wetLevel + this.state3.wetLevel) / 3,
+        (this.state1.wetLevel + this.state2.wetLevel + this.state3.wetLevel) / 3,
       closedHihatDecayLevel:
-        (this.state.closedHihatDecayLevel +
+        (this.state1.closedHihatDecayLevel +
           this.state2.closedHihatDecayLevel +
           this.state3.closedHihatDecayLevel) /
         3,
       kickDrumTuning:
-        (this.state.kickDrumTuning +
+        (this.state1.kickDrumTuning +
           this.state2.kickDrumTuning +
           this.state3.kickDrumTuning) /
         3,
@@ -286,6 +295,7 @@ class Selection extends Component {
           <input id="beatDensity" name="beatDensity" type="number" />
 
           <button onClick={this.pause}>Confirm Parameters</button>
+          
         </form>
         <PlayPause
           play={this.play}
@@ -322,6 +332,7 @@ class Selection extends Component {
 		    <button onClick={this.newBeats}>
             Regenerate Beats
         </button>
+
         <button onClick={this.pause}>
           <Link
             to={{
