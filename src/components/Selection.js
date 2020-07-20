@@ -76,7 +76,7 @@ class Selection extends Component {
     closedHihatDecayLevel: 0.8,
     wetLevel: 0.75,
     mediaRecorderState: false,
-  };
+  }
 
   selectedBeat = this.state1;
 
