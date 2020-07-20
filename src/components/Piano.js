@@ -8,10 +8,6 @@ class Piano extends Component{
     super();
     this.PlayPause = PlayPause;
     this.handleSubmit = this.handleSubmit.bind(this);
-
-    this.state = {
-      selectedBeat: {}
-    }
   }
 
   getBpm = 120;
@@ -46,21 +42,22 @@ class Piano extends Component{
     //mediaRecorderState: false,
   };
 
+  selectedMelody = this.track1;
+
   synth = new Tone.Synth({
     oscillator: {
       type: "sine",
     }
   }).toMaster()
 
-  play = (beat) => {
-    console.log(this.state.selectedBeat);
+  play = (melody) => {
     Tone.Transport.bpm.value = this.getBpm;
     Tone.Transport.toggle();
 
     this.part = new Tone.Part(
       (time, note) => {
       this.synth.triggerAttackRelease(note, "8n", time);
-    }, this.state.selectedBeat.notes)
+    }, this.selectedMelody.notes)
 
     this.part.loop = true;
     this.part.start();
@@ -71,14 +68,13 @@ class Piano extends Component{
     console.log("paused");
   };
 
-  setBeat = (beat) => {
-    this.setState({
-      selectedBeat: beat
-    });
+  setMelody = (melody) => {
+    this.selectedMelody = melody;
   };
 
   changeBpm = (value) => {
     Tone.Transport.bpm.value = value;
+    this.getBpm = value;
   };
 
   handleSubmit = (event) => {
@@ -90,6 +86,7 @@ class Piano extends Component{
   };
 
   render() {
+    console.log(this.selectedMelody);
     
     return(
       <div>
@@ -106,7 +103,7 @@ class Piano extends Component{
           pause={this.pause}
           playState={this.playState}
           beat={this.track1}
-          setBeat={this.setBeat}
+          setBeat={this.setMelody}
           selection={true}
           style={{ marginBottom: "1rem" }}
         />
@@ -115,7 +112,7 @@ class Piano extends Component{
           pause={this.pause}
           playState={this.playState}
           beat={this.track2}
-          setBeat={this.setBeat}
+          setBeat={this.setMelody}
           selection={true}
           style={{ marginBottom: "1rem" }}
         />
@@ -124,7 +121,7 @@ class Piano extends Component{
           pause={this.pause}
           playState={this.playState}
           beat={this.track3}
-          setBeat={this.setBeat}
+          setBeat={this.setMelody}
           selection={true}
           style={{ marginBottom: "1rem" }}
         />
