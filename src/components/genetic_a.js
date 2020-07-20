@@ -1,6 +1,6 @@
 // Generate population of random DNA
 // Currently cannot disable instruments. To do that try using DNA function
-export function generatePopulation(totalPopulation, numBeats, instruments, beats) {
+export function generatePopulation(totalPopulation, numBeats, instruments) {
 	var population = new Array(totalPopulation);
 	var fitness = 0;
 	for (var i = 0; i < totalPopulation; i++) {
@@ -55,17 +55,17 @@ function calcFitnessInitial(currBeatPattern, targetBeatDensity, numBeats) {
 }
 
 // Fitness function for a song in full
-function calcFitnessFull(genes, target) {
-	var fitness = 0;
-	fitness = fitness + (1 - Math.abs(genes.tempo-target.tempo)/200)
-	for (var i = 0; i < genes.instruments.length; i++) {
-		fitness = fitness + (1 - Math.abs(genes.beat_density[i]-target.beat_density[i])/100)
-	}
-	fitness = fitness + (1 - Math.abs(genes.pitch-target.pitch)/100)
-	fitness = fitness + (1 - Math.abs(genes.attack-target.attack)/1)
-	fitness = fitness + (1 - Math.abs(genes.delay-target.delay)/4)
-	return fitness
-}
+// function calcFitnessFull(genes, target) {
+// 	var fitness = 0;
+// 	fitness = fitness + (1 - Math.abs(genes.tempo-target.tempo)/200)
+// 	for (var i = 0; i < genes.instruments.length; i++) {
+// 		fitness = fitness + (1 - Math.abs(genes.beat_density[i]-target.beat_density[i])/100)
+// 	}
+// 	fitness = fitness + (1 - Math.abs(genes.pitch-target.pitch)/100)
+// 	fitness = fitness + (1 - Math.abs(genes.attack-target.attack)/1)
+// 	fitness = fitness + (1 - Math.abs(genes.delay-target.delay)/4)
+// 	return fitness
+// }
 
 // TODO: Make updateGA happen on click, display the fittest
 export function updateGA(population, targetBeatDensity, mutationRate, numBeats, instruments) {

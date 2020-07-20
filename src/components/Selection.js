@@ -208,6 +208,7 @@ class Selection extends Component {
     this.state3.steps = newVals[2];
     this.stateGA.population = newVals[3];
     console.log(this.state1.steps);
+    this.selectedBeat = this.state1;
   }
 
   handleSubmit = (event) => {
@@ -281,7 +282,6 @@ class Selection extends Component {
           <input id="beatDensity" name="beatDensity" type="number" />
 
           <button onClick={this.pause}>Confirm Parameters</button>
-          
         </form>
         <PlayPause
           play={this.play}
