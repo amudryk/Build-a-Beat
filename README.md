@@ -1,3 +1,18 @@
+## Feedback Notes for Professor Borland
+
+The process we took was to prototype out each singular section of our workflow. This is why the code we are providing you is provided in separate features. This method of testing allowed us to understand how each feature performs on its own and in combination with another. We connected this experience though a [Figma prototype](https://www.figma.com/proto/q7kQQcfiHid6iF1w5r23lj/Build-A-Beat?node-id=363%3A43&viewport=-1782%2C2744%2C0.5030785799026489&scaling=scale-down) when testing with our users.
+
+<b>Features:</b>
+- Initial generation and regeneration tool based on a mutation GA with two preset parameters and three variable parameters.
+- A mutation tool that randomizes the final beat's properties. 
+- An additional prototype at its beginning phase of how we might start adding melodies to the beats and control how they are layered.
+
+We’d especially like feedback on our genetic algorithm and any recommendations you might have to optimize the way we are generating beats and mutating them based on our parameters. We’re currently working on testing the performance of our genetic algorithm based on various inputs to evaluate the variety of options it can produce, and strike a balance between control and randomness. The default randomness is on the lower side of things just due to our target user being a novice - the purpose being to progressively introduce the user to experimental and more complex settings.
+
+
+
+-------------------
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
