@@ -19,13 +19,12 @@ class Selection extends Component {
   getBeatDensity = 0.7;
   selectedBeat;
 
-  //TODO: Decide on these values
 	mutationRate = 1;		// Mutation rate
 	totalPopulation = 100;	// Total population
   generations = 10;		// Number of generations between updates
   numBeats = 16;
-  instrumentsInit = [1,0,1];
-  beatDensityInit = new Array(this.instrumentsInit.length).fill(14);  // This should be from the Quiz
+  instrumentsInit = [1,1,1];  // Active instruments. Should be set from the Quiz
+  beatDensityInit = new Array(this.instrumentsInit.length).fill(14);  // Preferred beat density. Should be from the Quiz
   stepsInit = new Array(this.instrumentsInit.length).fill(Array(this.numBeats).fill(0));  // Empty array of beats
   populationInit = generatePopulation(this.totalPopulation, this.numBeats, this.instrumentsInit, this.stepsInit);
 
@@ -202,7 +201,7 @@ class Selection extends Component {
   };
 
   updateBeatPatterns = () => {
-    var newVals = updateGA(this.stateGA.population, this.stateGA.targetBeatDensity, this.mutationRate, this.numBeats, this.instrumentsInit);
+    var newVals = updateGA(this.stateGA.population, this.stateGA.targetBeatDensity, this.mutationRate, this.numBeats);
     this.state1.steps = newVals[0];
     this.state2.steps = newVals[1];
     this.state3.steps = newVals[2];
