@@ -12,37 +12,60 @@ class Piano extends Component{
 
   getBpm = 120;
   
+  // track1 = {
+  //   notes: [
+  //     [0, "C4"], 
+  //     ["0:2", "C5"], 
+  //     ["0:3:2", "G4"]
+  //   ],
+  // };
+
+  // track2 = {
+  //   notes: [
+  //     [0, "G3"], 
+  //     ["0:2", "F2"], 
+  //     ["0:3:2", "G4"]
+  //   ],
+  // };
+
+  // track3 = {
+  //   notes: [
+  //     [0, "D3"], 
+  //     ["0:2", "D3"], 
+  //     ["0:3:2", "A4"]
+  //   ],
+  // };
+
   track1 = {
     notes: [
-      [0, "C4"], 
+      ["0", "C4"], 
       ["0:2", "C5"], 
       ["0:3:2", "G4"]
     ],
-    //time: 0,
-    //mediaRecorderState: false,
   };
 
   track2 = {
     notes: [
-      [0, "G3"], 
-      ["0:2", "F2"], 
-      ["0:3:2", "G4"]
+      ["0", "G3"],
+      ["0:0:2", "D3"], 
+      ["0:1", "F3"], 
+      ["0:2", "G4"],
+      ["0:3", "D3"],
     ],
-    //time: 0,
-    //mediaRecorderState: false,
   };
 
   track3 = {
     notes: [
-      [0, "D3"], 
-      ["0:2", "D3"], 
-      ["0:3:2", "A4"]
+      ["0", "D4"], 
+      ["0:1", "D4"], 
+      ["0:2:1", "A4"],
+      ["0:2:2", "C4"],
+      ["0:3", "A4"]
     ],
-    //time: 0,
-    //mediaRecorderState: false,
   };
 
   selectedMelody = this.track1;
+  part = new Tone.Part();
 
   synth = new Tone.Synth({
     oscillator: {
@@ -51,6 +74,7 @@ class Piano extends Component{
   }).toMaster()
 
   play = (melody) => {
+    this.part.dispose();   
     Tone.Transport.bpm.value = this.getBpm;
     Tone.Transport.toggle();
 
@@ -86,8 +110,6 @@ class Piano extends Component{
   };
 
   render() {
-    console.log(this.selectedMelody);
-    
     return(
       <div>
         <h1>Select a Piano Track</h1>
