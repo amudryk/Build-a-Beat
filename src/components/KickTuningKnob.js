@@ -32,7 +32,7 @@ class KickTuningKnob extends React.Component {
           onChange={(value) => {
             this.handleChange(value);
           }}
-          min={44}
+          min={20}
           max={100}
           value={this.state.value}
           unlockDistance={0}
