@@ -3,7 +3,7 @@ import "../App.css";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as Tone from "tone";
 
-import { generatePopulation,updateGA } from "./genetic_a.js";
+import { generatePopulation, DNA, updateGA } from "./genetic_a.js";
 
 import PlayPause from "./PlayPause.js";
 import Regenerate from "./Regenerate.js";
@@ -24,12 +24,10 @@ class Selection extends Component {
 	totalPopulation = 100;	// Total population
   generations = 10;		// Number of generations between updates
   numBeats = 16;
-  instrumentsInit = [1,1,1];
-  beatDensityInit = Array(this.instrumentsInit.length).fill(14)  // This should be from the Quiz
-  stepsInit = Array(this.instrumentsInit.length).fill(Array(this.numBeats).fill(0));  // Empty array of beats
-  populationInit = generatePopulation(this.totalPopulation, this.numBeats, this.instrumentsInit, this.stepsInit)
-
-	get_from_UI = 0;	// Placeholder
+  instrumentsInit = [1,0,1];
+  beatDensityInit = new Array(this.instrumentsInit.length).fill(14);  // This should be from the Quiz
+  stepsInit = new Array(this.instrumentsInit.length).fill(Array(this.numBeats).fill(0));  // Empty array of beats
+  populationInit = generatePopulation(this.totalPopulation, this.numBeats, this.instrumentsInit, this.stepsInit);
 
   stateGA = {
     population: this.populationInit,
@@ -37,7 +35,7 @@ class Selection extends Component {
   }
 
   state1 = {
-    steps: this.stateGA.population[0][0],
+    steps: this.stateGA.population[0],
     bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
@@ -51,7 +49,7 @@ class Selection extends Component {
   };
 
   state2 = {
-    steps: this.stateGA.population[1][0],
+    steps: this.stateGA.population[1],
     bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
@@ -65,7 +63,7 @@ class Selection extends Component {
   };
 
   state3 = {
-    steps: this.stateGA.population[2][0],
+    steps: this.stateGA.population[2],
     bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
@@ -149,15 +147,6 @@ class Selection extends Component {
     octaves: 1,
   }).chain(this.appVol, Tone.Master);
 
-  newBeat = () => {
-    var newVals = updateGA(this.state.population, this.state.targetBeatDensity, this.mutationRate, this.state.steps, this.numBeats);
-    var newB = newVals[0];
-    this.setState({
-      population: newVals[1],
-      steps: newB.beats,
-    });
-  }
-
   play = (beat) => {
     Tone.Transport.bpm.value = this.selectedBeat.bpm;
     Tone.Transport.toggle();
@@ -206,17 +195,20 @@ class Selection extends Component {
       wetLevel:
         (this.state1.wetLevel + this.state2.wetLevel + this.state3.wetLevel) / 3,
       closedHihatDecayLevel:
-        (this.state1.closedHihatDecayLevel +
-          this.state2.closedHihatDecayLevel +
-          this.state3.closedHihatDecayLevel) /
-        3,
+        (this.state1.closedHihatDecayLevel + this.state2.closedHihatDecayLevel + this.state3.closedHihatDecayLevel) / 3,
       kickDrumTuning:
-        (this.state1.kickDrumTuning +
-          this.state2.kickDrumTuning +
-          this.state3.kickDrumTuning) /
-        3,
+        (this.state1.kickDrumTuning + this.state2.kickDrumTuning + this.state3.kickDrumTuning) / 3,
     };
   };
+
+  updateBeatPatterns = () => {
+    var newVals = updateGA(this.stateGA.population, this.stateGA.targetBeatDensity, this.mutationRate, this.numBeats, this.instrumentsInit);
+    this.state1.steps = newVals[0];
+    this.state2.steps = newVals[1];
+    this.state3.steps = newVals[2];
+    this.stateGA.population = newVals[3];
+    console.log(this.state1.steps);
+  }
 
   handleSubmit = (event) => {
     event.preventDefault();
@@ -271,19 +263,13 @@ class Selection extends Component {
     return () => this.loop.dispose();
   }
 
-  newBeats = () => {
-    var newVals = updateGA(this.state.population, this.state.targetBeatDensity, this.mutationRate, this.state.steps, this.numBeats);
-    var newB = newVals[0];
-    this.stateGA.population = newVals[1];
-  }
-
   render() {
     return (
       <React.Fragment>
         <h2>Select your preferred rhythm</h2>
-        <div>{this.stateGA.population[0][0]}</div>
-        <div>{this.stateGA.population[1][0]}</div>
-        <div>{this.stateGA.population[2][0]}</div>
+        <div>{this.state1.steps[0]}</div>
+        <div>{this.state2.steps[0]}</div>
+        <div>{this.state3.steps[0]}</div>
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="pitch">Pitch (10-100)</label>
           <input id="pitch" name="pitch" type="number" />
@@ -329,10 +315,9 @@ class Selection extends Component {
           currentBeat={this.currentBeatParams}
           chosenBeat={this.selectedBeat}
         />
-		    <button onClick={this.newBeats}>
+		    <button onClick={this.updateBeatPatterns}>
             Regenerate Beats
         </button>
-
         <button onClick={this.pause}>
           <Link
             to={{

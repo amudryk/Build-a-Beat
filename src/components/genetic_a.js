@@ -1,17 +1,13 @@
 // Generate population of random DNA
+// Currently cannot disable instruments. To do that try using DNA function
 export function generatePopulation(totalPopulation, numBeats, instruments, beats) {
-	var population = [[[]]];
+	var population = new Array(totalPopulation);
 	var fitness = 0;
 	for (var i = 0; i < totalPopulation; i++) {
-		for (var j = 0; j < instruments.length; j++) {
-			if (instruments[j] === 1) {
-				beats[j] = Array.from({length: numBeats}, () => getRndInteger(0,1.9))	// Generate an array of random 0's and 1's
-			} else {
-				beats[j] = Array.from({length: numBeats}, 0)
-			}
-		}
-		population[i] = [beats,fitness]
-
+		population[i] = Array.from(
+			{length: instruments.length},
+			() => Array.from({length: numBeats}, () => getRndInteger(0,1.9)));
+		population[i].push(fitness);
 	}
 	return population;
 }
@@ -20,41 +16,40 @@ export function generatePopulation(totalPopulation, numBeats, instruments, beats
 export function DNA(numBeats, instruments, beats) {
 	for (var i = 0; i < instruments.length; i++) {
 		if (instruments[i] === 1) {
-			beats[i] = Array.from({length: numBeats}, () => getRndInteger(0,1.9))	// Generate an array of random 0's and 1's
+			beats[i] = Array.from({length: numBeats}, () => getRndInteger(0,1.9));	// Generate an array of random 0's and 1's
 		} else {
-			beats[i] = Array.from({length: numBeats}, 0)
+			beats[i] = Array.from({length: numBeats}, () => 0);
 		}
 	}
-	var fitness = 0;
-	return [beats,fitness];
-}
-
-// Re-usable way to calculate beat density
-function calcBeatDensity(numBeats, genes) {
-	var count;
-	for (var i = 0; i < genes.instruments.length; i++) {
-		count = 0;
-		for (var j = 0; j < numBeats; j++) {
-			if (genes.beats[i][j] === 1) {
-				count++;
-			}
-		}
-		genes.beat_density[i] = 100*(count/numBeats);
-	}
-	return genes.beat_density;
+	return beats;
 }
 
 //random number generator function - from https://www.w3schools.com/js/js_random.asp
-function getRndInteger(min, max) {
+export function getRndInteger(min, max) {
 	return Math.floor(Math.random() * (max - min) ) + min;
 }
 
+// Re-usable way to calculate beat density
+function calcBeatDensity(numBeats, beats) {
+	var count = 0;
+	var beatDensity = [];
+	for (var i in beats) {
+		for (var j in beats[i]) {
+			if (beats[i][j] === 1) {
+				count++;		
+			}
+		}
+		beatDensity[i] = 100*(count/numBeats);
+	}
+	return beatDensity;
+}
+
 // Fitness calculated by deviation from target values - low score is more fit
-function calcFitnessInitial(genes, target_b_d) {
+function calcFitnessInitial(currBeatPattern, targetBeatDensity, numBeats) {
 	var fitness = 0;
-	// for (var i = 0; i < genes.instruments.length; i++) {
-	for (var i = 0; i < 3; i++) {
-		fitness = fitness + (1 - Math.abs(genes.beat_density[i]-target_b_d[i])/100)
+	var beatDensity = calcBeatDensity(numBeats, currBeatPattern)
+	for (var i in currBeatPattern) {
+		fitness = fitness + (1 - Math.abs(beatDensity[i]-targetBeatDensity[i])/100)
 	}
 	return fitness;
 }
@@ -73,65 +68,66 @@ function calcFitnessFull(genes, target) {
 }
 
 // TODO: Make updateGA happen on click, display the fittest
-export function updateGA(population, targetBeatDensity, mutationRate, empty, numBeats) {
+export function updateGA(population, targetBeatDensity, mutationRate, numBeats, instruments) {
 	var maxFit = 0;
+	var secondMaxFit = 0;
+	var thirdMaxFit = 0;
 	var matingPool = [];
 	var fittest;
-	for (var i = 0; i < population.length; i++) {
-		population[i].fitness = calcFitnessInitial(population[i], targetBeatDensity);
-		if (population[i].fitness > maxFit) {
-			maxFit = population[i].fitness;
-			fittest = population[i];
+	var secondFit;
+	var thirdFit;
+	for (var i in population) {
+		population[i][1] = calcFitnessInitial(population[i][0], targetBeatDensity, numBeats);
+		if (population[i][1] > maxFit) {
+			maxFit = population[i][1];
+			fittest = population[i][0];
+		} else if (population[i][1] > secondMaxFit) {
+			secondMaxFit = population[i][1];
+			secondFit = population[i][0];
+		} else if (population[i][1] > thirdMaxFit) {
+			thirdMaxFit = population[i][1];
+			thirdFit = population[i][0];
 		}
 	}
-	for (var j = 0; j < population.length; j++) {
-		var nnnn = parseInt(population[j].fitness*100)	// Arbitrary multiplier
+	for (var j in population) {
+		var nnnn = parseInt(population[j][1]*100)	// Arbitrary multiplier
 		for (var k = 0; k < nnnn; k++) {
-			matingPool.push(population[j]);
+			matingPool.push(population[j][0]);
 		}
 	}
-	for (var m = 0; m < population.length; m++) {
+	for (var m in population) {
 		var a = getRndInteger(0,matingPool.length);
 		var b = getRndInteger(0,matingPool.length);
 		var partnerA = matingPool[a];
 		var partnerB = matingPool[b];
-		var child = crossover(partnerA, partnerB, empty, numBeats);
+		var child = crossover(partnerA, partnerB);
 		child = mutate(mutationRate, child);
 		population[m] = child;
 	}
-	return [fittest,population];
+	return [fittest, secondFit, thirdFit, population];
 }
 
 // Crossover
-function crossover(pA, pB, empty, numBeats) {
-	var child = empty;
-	for (var i = 0; i < empty.instruments.length; i++) {
-		if (getRndInteger(0,1) === 1) {
-			child.beats[i] = pA.beats[i]
+function crossover(pA, pB) {
+	var child = [];
+	for (var i in pA) {
+		if (getRndInteger(0,1.9) === 1) {
+			child[i] = pA[i];
 		} else {
-			child.beats[i] = pB.beats[i]
+			child[i] = pB[i];
 		}
 	}
-	if (getRndInteger(0,1) === 1) {
-		child.pitch = pA.pitch;
-		child.attack = pA.attack;
-		child.delay = pA.delay;
-	} else {
-		child.pitch = pB.pitch;
-		child.attack = pB.attack;
-		child.delay = pB.delay;
-	}
-	child.beat_density = calcBeatDensity(numBeats, child)
 	return child;
 }
 
 // Mutate
-function mutate(mutationRate, genes, numBeats) {
-	for (var i = 0; i < genes.instruments; i++) {
-		for (var j = 0; j < numBeats; j++) {
+function mutate(mutationRate, beats) {
+	for (var i in beats) {
+		for (var j in beats[i]) {
 			if (getRndInteger(0,100) < mutationRate) {
-				genes.beats[i][j] = getRndInteger(0,1)
+				beats[i][j] = getRndInteger(0,1.9)
 			}
 		}
 	}
+	return beats;
 }
