@@ -85,7 +85,7 @@ class Regenerate extends Component {
           }}
         >
           <i className="random icon" />
-          Regenerate
+          Regenerate Pitch
         </button>
       </div>
     );

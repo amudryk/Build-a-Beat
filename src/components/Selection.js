@@ -3,6 +3,8 @@ import "../App.css";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import * as Tone from "tone";
 
+import { generatePopulation,DNA } from "./genetic_a.js";
+
 import PlayPause from "./PlayPause.js";
 import Regenerate from "./Regenerate.js";
 
@@ -15,13 +17,23 @@ class Selection extends Component {
   getBpm = 120;
   getPitch;
   getBeatDensity = 0.7;
+  selectedBeat;
 
-  state = {
-    steps: [
-      [1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1],
-      [1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1],
-      [0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    ],
+  //TODO: Decide on these values
+	mutationRate = 1;		// Mutation rate
+	totalPopulation = 100;	// Total population
+  generations = 10;		// Number of generations between updates
+  numBeats = 16;
+  instruments1 = [1,1,1];
+  beatDensity1 = Array(this.instruments1.length).fill(14)  // This should be from the Quiz
+  steps1 = Array(this.instruments1.length).fill(Array(this.numBeats).fill(0));  // Empty array of beats
+  population1 = generatePopulation(this.totalPopulation, this.numBeats, this.instruments1, this.steps1)
+
+	get_from_UI = 0;	// Placeholder
+
+
+  state1 = {
+    steps: DNA(this.numBeats, this.instruments1, this.steps1)[0],
     bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
@@ -35,11 +47,7 @@ class Selection extends Component {
   };
 
   state2 = {
-    steps: [
-      [1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-      [0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0],
-      [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-    ],
+    steps: DNA(this.numBeats, this.instruments1, this.steps1)[0],
     bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
@@ -53,11 +61,7 @@ class Selection extends Component {
   };
 
   state3 = {
-    steps: [
-      [0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1],
-      [0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0],
-      [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1],
-    ],
+    steps: DNA(this.numBeats, this.instruments1, this.steps1)[0],
     bpm: this.getBpm,
     notes: ["A", "C#", "E", "F#"],
     column: 0,
@@ -70,19 +74,23 @@ class Selection extends Component {
     mediaRecorderState: false,
   };
 
-  selectedBeat = this.state;
+	stateGA = {
+    population: this.population1,
+  }
+
+  selectedBeat = this.state1;
 
   //average between state1,2,3
   currentBeatParams = {
     wetLevel:
-      (this.state.wetLevel + this.state2.wetLevel + this.state3.wetLevel) / 3,
+      (this.state1.wetLevel + this.state2.wetLevel + this.state3.wetLevel) / 3,
     closedHihatDecayLevel:
-      (this.state.closedHihatDecayLevel +
+      (this.state1.closedHihatDecayLevel +
         this.state2.closedHihatDecayLevel +
         this.state3.closedHihatDecayLevel) /
       3,
     kickDrumTuning:
-      (this.state.kickDrumTuning +
+      (this.state1.kickDrumTuning +
         this.state2.kickDrumTuning +
         this.state3.kickDrumTuning) /
       3,
@@ -284,7 +292,7 @@ class Selection extends Component {
           play={this.play}
           pause={this.pause}
           playState={this.playState}
-          beat={this.state}
+          beat={this.state1}
           setBeat={this.setBeat}
           selection={true}
           style={{ marginBottom: "1rem" }}
@@ -312,6 +320,18 @@ class Selection extends Component {
           currentBeat={this.currentBeatParams}
           chosenBeat={this.selectedBeat}
         />
+		    {/* <button onClick={this.newBeats}>
+          <Link
+            to={{
+              pathname: "/editor",
+              aboutProps: {
+                state: this.selectedBeat,
+              },
+            }}
+          >
+            Regenerate
+          </Link>
+        </button> */}
         <button onClick={this.pause}>
           <Link
             to={{
